@@ -108,7 +108,7 @@ def appendAU(msgs_counter,Allow_collect_after,x1,u_up,info):
         msgs_counter={'used':msgs_counter['used'],'unused':msgs_counter['unused']+1,'not_allowed':msgs_counter['not_allowed'],'passed_space':msgs_counter['passed_space']}
     return x1,u_up,msgs_counter
 
-file_dalle=open('dall-e.jsonl','w',encoding='UTF-8')
+#file_dalle=open('dall-e.jsonl','w',encoding='UTF-8')
 
 
 def assistantProc(msgs_counter,m,x1,autor,text,Allow_collect_after,Allow,u_up,stupid_stop_stat,msg):
@@ -118,19 +118,15 @@ def assistantProc(msgs_counter,m,x1,autor,text,Allow_collect_after,Allow,u_up,st
             x0p=[]
             for a in x1:
                 x0p.append(json.loads(a))
-            file_dalle.write(json.dumps(x0p,ensure_ascii=False)+'\n')
+            #file_dalle.write(json.dumps(x0p,ensure_ascii=False)+'\n')
         else:
             if text!='':
-                if text[-1]=='.':
-                    x1,u_up,msgs_counter = appendAU(msgs_counter,Allow_collect_after,x1,u_up,json.dumps({"role":autor,"text":text},ensure_ascii=False))
-                elif text[-1]=='!':
-                    x1,u_up,msgs_counter = appendAU(msgs_counter,Allow_collect_after,x1,u_up,json.dumps({"role":autor,"text":text},ensure_ascii=False))
-                elif text[-1]=='?':
+                if text[-1] in [".","!","?","\"","'",'`']:
                     x1,u_up,msgs_counter = appendAU(msgs_counter,Allow_collect_after,x1,u_up,json.dumps({"role":autor,"text":text},ensure_ascii=False))
                 else:
                     pass
-                    Allow_collect_after=False
-                    stupid_stop_stat=True
+                    '''Allow_collect_after=False
+                    stupid_stop_stat=True'''
     else:
         msgs_counter={'used':msgs_counter['used'],'unused':msgs_counter['unused'],'not_allowed':msgs_counter['not_allowed'],'passed_space':msgs_counter['passed_space']+1}
 
@@ -266,7 +262,7 @@ def chatGPT_proc(dirr):
             noresp_detect+=1
         
         if Allow:
-            dataset.append("\n".join(x1))
+            dataset.append("\n".join(x1)+'\n')
         else:
             msgs_counter={'used':msgs_counter['used'],'unused':msgs_counter['unused'],'not_allowed':msgs_counter['not_allowed']+len(x1),'passed_space':msgs_counter['passed_space']}
         
@@ -275,7 +271,9 @@ def chatGPT_proc(dirr):
         
         if stupid_stop_stat:
             stupid_stop+=1
-    
+        
+        
+        
     out_buf=''
     out_buf+='\n'
     out_buf+=str(f'Found {img_detect} uses of GPT4(V) messages')+'\n'
